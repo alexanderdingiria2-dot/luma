@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email } = body
 
-    // Email-Validierung
+    // Email validation
     if (!email || typeof email !== 'string') {
       return NextResponse.json(
-        { error: 'E-Mail-Adresse ist erforderlich' },
+        { error: 'Email address is required' },
         { status: 400 }
       )
     }
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Ungültige E-Mail-Adresse' },
+        { error: 'Invalid email address' },
         { status: 400 }
       )
     }
@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
     const smtpUser = process.env.SMTP_USER || 'business.luma.toys@gmail.com'
     
     if (!smtpPassword || smtpPassword.trim() === '') {
-      console.error('❌ SMTP_PASSWORD ist nicht gesetzt!')
+      console.error('❌ SMTP_PASSWORD is not set!')
       return NextResponse.json(
-        { error: 'E-Mail-Service nicht konfiguriert. Bitte SMTP_PASSWORD in .env.local setzen.' },
+        { error: 'Email service not configured. Please set SMTP_PASSWORD in .env.local.' },
         { status: 500 }
       )
     }
@@ -60,16 +60,16 @@ export async function POST(request: NextRequest) {
         from: `"Luma Waitlist" <${smtpUser}>`,
         to: 'business.luma.toys@gmail.com',
         replyTo: email, // Antworten gehen direkt an den Benutzer
-        subject: `🚀 Neue E-Mail von Luma Waitlist: ${email}`,
-        text: `Neue E-Mail-Adresse für die Waitlist:\n\nE-Mail: ${email}\nDatum: ${new Date().toLocaleString('de-DE')}\n\nAntworte direkt an diese E-Mail, um den Benutzer zu kontaktieren.`,
+        subject: `🚀 New email from Luma Waitlist: ${email}`,
+        text: `New email address for the waitlist:\n\nEmail: ${email}\nDate: ${new Date().toLocaleString('en-US')}\n\nReply directly to this email to contact the user.`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #333;">🚀 Neue E-Mail von Luma Waitlist</h2>
+            <h2 style="color: #333;">🚀 New email from Luma Waitlist</h2>
             <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p style="margin: 10px 0;"><strong>E-Mail-Adresse:</strong> <a href="mailto:${email}">${email}</a></p>
-              <p style="margin: 10px 0;"><strong>Datum:</strong> ${new Date().toLocaleString('de-DE')}</p>
+              <p style="margin: 10px 0;"><strong>Email address:</strong> <a href="mailto:${email}">${email}</a></p>
+              <p style="margin: 10px 0;"><strong>Date:</strong> ${new Date().toLocaleString('en-US')}</p>
             </div>
-            <p style="color: #666; font-size: 14px;">Antworte direkt auf diese E-Mail, um den Benutzer zu kontaktieren.</p>
+            <p style="color: #666; font-size: 14px;">Reply directly to this email to contact the user.</p>
           </div>
         `,
       })
@@ -85,17 +85,17 @@ export async function POST(request: NextRequest) {
       console.error('   Response:', emailError.response)
       console.error('   Response Code:', emailError.responseCode)
       
-      // Spezifische Fehlermeldungen
-      let errorMessage = 'E-Mail konnte nicht gesendet werden.'
+      // Specific error messages
+      let errorMessage = 'Email could not be sent.'
       
       if (emailError.code === 'EAUTH' || emailError.responseCode === 535) {
-        errorMessage = 'Authentifizierungsfehler. Gmail benötigt ein App-Passwort (nicht das normale Passwort). Siehe GMAIL_SETUP.md für Anleitung.'
+        errorMessage = 'Authentication error. Gmail requires an app password (not the regular password). See GMAIL_SETUP.md for instructions.'
       } else if (emailError.code === 'ECONNECTION' || emailError.code === 'ETIMEDOUT') {
-        errorMessage = 'Verbindungsfehler. Bitte überprüfe deine Internetverbindung.'
+        errorMessage = 'Connection error. Please check your internet connection.'
       } else if (emailError.responseCode === 534) {
-        errorMessage = '2-Faktor-Authentifizierung erforderlich. Bitte aktiviere 2FA und erstelle ein App-Passwort. Siehe GMAIL_SETUP.md'
+        errorMessage = 'Two-factor authentication required. Please enable 2FA and create an app password. See GMAIL_SETUP.md'
       } else if (emailError.message?.includes('Invalid login') || emailError.message?.includes('Username and Password not accepted')) {
-        errorMessage = 'Gmail akzeptiert kein normales Passwort. Du musst ein App-Passwort erstellen. Siehe GMAIL_SETUP.md'
+        errorMessage = 'Gmail does not accept regular passwords. You must create an app password. See GMAIL_SETUP.md'
       }
       
       return NextResponse.json(
@@ -141,9 +141,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true }, { status: 200 })
   } catch (error) {
-    console.error('Fehler beim Verarbeiten der Anfrage:', error)
+    console.error('Error processing request:', error)
     return NextResponse.json(
-      { error: 'Interner Serverfehler' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

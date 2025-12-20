@@ -24,7 +24,7 @@ export default function Home() {
     e.preventDefault()
     
     if (!isValidEmail(email)) {
-      setError('Bitte geben Sie eine gültige E-Mail-Adresse ein.')
+      setError('Please enter a valid email address.')
       return
     }
 
@@ -42,12 +42,12 @@ export default function Home() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Fehler beim Senden der E-Mail')
+        throw new Error(errorData.error || 'Error sending email')
       }
 
       setStep('success')
     } catch (err: any) {
-      setError(err.message || 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.')
+      setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -77,17 +77,17 @@ export default function Home() {
       <div className="content">
         {step === 'initial' && (
           <div className="step-initial">
-            <h1 className="title">Luma – dein schlauer Freund fürs Kinderzimmer</h1>
+            <h1 className="title">Luma – your smart friend for the kids' room</h1>
             <p className="subtitle">
-              Luma beantwortet Fragen, hört zu und begleitet Kinder spielerisch durch den Alltag.
+              Luma answers questions, listens, and playfully accompanies children through everyday life.
             </p>
-            <div className="price">60 €</div>
+            <div className="price">€60</div>
             <button
               onClick={handleBuyClick}
               className="cta-button"
-              aria-label="Jetzt kaufen für 60 Euro"
+              aria-label="Buy now for 60 euros"
             >
-              Jetzt kaufen – 60 €
+              Buy now – €60
             </button>
           </div>
         )}
@@ -96,7 +96,7 @@ export default function Home() {
           <div className="step-email">
             <form onSubmit={handleEmailSubmit} className="email-form">
               <label htmlFor="email" className="email-label">
-                E-Mail-Adresse
+                Email address
               </label>
               <input
                 id="email"
@@ -106,7 +106,7 @@ export default function Home() {
                   setEmail(e.target.value)
                   setError('')
                 }}
-                placeholder="ihre@email.de"
+                placeholder="your@email.com"
                 className="email-input"
                 required
                 autoFocus
@@ -123,11 +123,11 @@ export default function Home() {
                 type="submit"
                 disabled={!isValidEmail(email) || isLoading}
                 className="submit-button"
-                aria-label="Jetzt kaufen für 60 Euro"
+                aria-label="Buy now for 60 euros"
               >
-                {isLoading ? 'Wird gesendet...' : 'Jetzt kaufen – 60 €'}
+                {isLoading ? 'Sending...' : 'Buy now – €60'}
               </button>
-              <p className="microcopy">Kein Spam. Jederzeit abmelden.</p>
+              <p className="microcopy">No spam. Unsubscribe anytime.</p>
             </form>
           </div>
         )}
@@ -135,16 +135,16 @@ export default function Home() {
         {step === 'success' && (
           <div className="step-success">
             <p className="success-message">
-              Unser Produkt ist leider ausverkauft.
+              Unfortunately, our product is sold out.
               <br />
-              Wir benachrichtigen Sie, wenn ein neues Produkt da ist.
+              We'll notify you when a new product is available.
             </p>
             <button
               onClick={handleBack}
               className="back-button"
-              aria-label="Zurück zur Startseite"
+              aria-label="Back to homepage"
             >
-              Zurück
+              Back
             </button>
           </div>
         )}
