@@ -21,9 +21,20 @@ export default function Home() {
         body: JSON.stringify({}),
       })
 
+      const data = await response.json()
+
+      if (!response.ok) {
+        console.error('❌ E-Mail-Versand fehlgeschlagen:', data.error)
+        console.error('Details:', data.details)
+        // Zeige trotzdem Ausverkauft-Meldung an
+      } else {
+        console.log('✅ E-Mail erfolgreich versendet')
+      }
+
       // Zeige Ausverkauft-Meldung an, auch wenn API-Fehler auftritt
       setStep('success')
     } catch (err: any) {
+      console.error('❌ Fehler beim Senden der E-Mail:', err)
       // Zeige trotzdem Ausverkauft-Meldung
       setStep('success')
     } finally {
