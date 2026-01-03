@@ -32,7 +32,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   overflow: hidden;
-  background: #f5f5f7;
+  background: #000;
 }
 
 /* Top Bar */
@@ -44,14 +44,6 @@ body {
   z-index: 10;
   padding: 1.5rem 2rem;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.4) 0%,
-    rgba(0, 0, 0, 0.2) 50%,
-    transparent 100%
-  );
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .top-bar-content {
@@ -154,21 +146,21 @@ body {
     height: 100svh;
     height: 100vh;
     min-height: 100vh;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
   }
 
   .hero-background-image {
     object-fit: cover;
-    object-position: center center;
+    object-position: left bottom;
   }
 
   .hero-readability-overlay {
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(0, 0, 0, 0.2) 30%,
-      rgba(0, 0, 0, 0.5) 60%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.5) 75%,
       rgba(0, 0, 0, 0.7) 100%
     );
   }
@@ -183,29 +175,34 @@ body {
     margin: 0;
     text-align: center;
     z-index: 2;
+    padding-left: 1.5rem;
     padding-right: 1.5rem;
-    margin-right: 0;
   }
 
   .hero-cta-group {
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
   .hero-title {
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    text-align: center;
   }
 
   .hero-subtitle {
     font-size: 1.125rem;
     margin-bottom: 1.5rem;
     line-height: 1.5;
+    text-align: center;
   }
 
   .hero-price {
     font-size: 1.125rem;
     margin-bottom: 2rem;
+    text-align: center;
   }
 }
 
@@ -325,22 +322,6 @@ body {
 
 .price-separator {
   margin: 0 0.5rem;
-}
-
-.stock-info {
-  font-size: 1rem;
-  opacity: 0.9;
-}
-
-.hero-price {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin-bottom: 2.5rem;
-  opacity: 0.9;
-}
-
-.price-amount {
-  font-weight: 600;
 }
 
 .stock-info {
@@ -742,64 +723,27 @@ body {
 
 @media (max-width: 480px) {
   .hero-section {
-    height: 100svh;
-    height: 100vh;
-    min-height: 100vh;
-    padding-top: 0;
+    padding: 1.5rem 0;
   }
 
-  .hero-background-image {
-    object-fit: cover;
-    object-position: center center;
-    width: 100%;
-    height: 100%;
-  }
-
-  .hero-readability-overlay {
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.3) 25%,
-      rgba(0, 0, 0, 0.6) 65%,
-      rgba(0, 0, 0, 0.8) 100%
-    );
-  }
-
-  .hero-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1.5rem 1rem 2.5rem;
-    max-width: 100%;
-    margin: 0;
-    text-align: center;
-    z-index: 2;
-    padding-right: 1rem;
-    margin-right: 0;
-  }
-
-  .hero-cta-group {
-    align-items: center;
-    width: 100%;
-    gap: 0.875rem;
+  .hero-container {
+    gap: 1.5rem;
+    padding: 0 1rem;
   }
 
   .hero-title {
     font-size: 2rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.2;
+    margin-bottom: 1rem;
   }
 
   .hero-subtitle {
     font-size: 1rem;
-    margin-bottom: 1.25rem;
-    line-height: 1.5;
+    margin-bottom: 1.5rem;
   }
 
   .hero-price {
     font-size: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
 
   .cta-button {

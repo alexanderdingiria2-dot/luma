@@ -61,7 +61,7 @@ export default function Home() {
 
         {/* Background Image */}
         <img
-          src="/ChatGPT Image 3. Jan. 2026, 23_38_52.png"
+          src="/ChatGPT Image 4. Jan. 2026, 00_01_38.png"
           alt="Luma product"
           className="hero-background-image"
         />
