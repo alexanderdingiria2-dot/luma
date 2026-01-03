@@ -6,22 +6,15 @@ import path from 'path'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email } = body
+    const { email } = body || {}
 
-    // Email validation
-    if (!email || typeof email !== 'string') {
-      return NextResponse.json(
-        { error: 'Email address is required' },
-        { status: 400 }
-      )
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
-      )
+    // E-Mail ist optional - wenn vorhanden, validieren
+    let customerEmail = null
+    if (email && typeof email === 'string') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (emailRegex.test(email)) {
+        customerEmail = email
+      }
     }
 
     // E-Mail-Versand an business.luma.toys@gmail.com
@@ -55,29 +48,45 @@ export async function POST(request: NextRequest) {
       // Teste die Verbindung zuerst
       await transporter.verify()
 
-      // E-Mail sofort senden
-      const mailResult = await transporter.sendMail({
+      // E-Mail an uns: Kaufversuch
+      const mailOptions: any = {
         from: `"Luma Waitlist" <${smtpUser}>`,
         to: 'business.luma.toys@gmail.com',
-        replyTo: email, // Antworten gehen direkt an den Benutzer
-        subject: `🚀 New email from Luma Waitlist: ${email}`,
-        text: `New email address for the waitlist:\n\nEmail: ${email}\nDate: ${new Date().toLocaleString('en-US')}\n\nReply directly to this email to contact the user.`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #333;">🚀 New email from Luma Waitlist</h2>
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p style="margin: 10px 0;"><strong>Email address:</strong> <a href="mailto:${email}">${email}</a></p>
-              <p style="margin: 10px 0;"><strong>Date:</strong> ${new Date().toLocaleString('en-US')}</p>
+        subject: customerEmail ? `🛒 Purchase attempt: ${customerEmail}` : '🛒 Purchase attempt (no email provided)',
+        text: customerEmail 
+          ? `Someone tried to purchase Luma:\n\nEmail: ${customerEmail}\nDate: ${new Date().toLocaleString('en-US')}\n\nReply directly to this email to contact the customer.`
+          : `Someone tried to purchase Luma:\n\nDate: ${new Date().toLocaleString('en-US')}\n\nNo email address was provided.`,
+        html: customerEmail
+          ? `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #333;">🛒 Purchase attempt</h2>
+              <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 10px 0;"><strong>Email address:</strong> <a href="mailto:${customerEmail}">${customerEmail}</a></p>
+                <p style="margin: 10px 0;"><strong>Date:</strong> ${new Date().toLocaleString('en-US')}</p>
+              </div>
+              <p style="color: #666; font-size: 14px;">Reply directly to this email to contact the customer.</p>
             </div>
-            <p style="color: #666; font-size: 14px;">Reply directly to this email to contact the user.</p>
-          </div>
-        `,
-      })
+          `
+          : `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #333;">🛒 Purchase attempt</h2>
+              <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 10px 0;"><strong>Date:</strong> ${new Date().toLocaleString('en-US')}</p>
+                <p style="margin: 10px 0; color: #666;">No email address was provided.</p>
+              </div>
+            </div>
+          `,
+      }
 
-      console.log('✅ E-Mail erfolgreich gesendet an business.luma.toys@gmail.com')
-      console.log('   E-Mail-Adresse:', email)
-      console.log('   Message ID:', mailResult.messageId)
-      console.log('   Empfänger:', mailResult.accepted)
+      if (customerEmail) {
+        mailOptions.replyTo = customerEmail
+      }
+
+      const businessMailResult = await transporter.sendMail(mailOptions)
+
+      console.log('✅ E-Mail an business.luma.toys@gmail.com gesendet')
+      console.log('   Message ID:', businessMailResult.messageId)
+      console.log('   Empfänger:', businessMailResult.accepted)
     } catch (emailError: any) {
       console.error('❌ FEHLER beim Senden der E-Mail:')
       console.error('   Fehlertyp:', emailError.code || 'UNKNOWN')
@@ -107,36 +116,38 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // E-Mail in JSON-Datei speichern für Statistiken
-    try {
-      const dataDir = path.join(process.cwd(), 'data')
-      const filePath = path.join(dataDir, 'waitlist.json')
-      
-      // Erstelle data-Ordner falls nicht vorhanden
-      await fs.mkdir(dataDir, { recursive: true })
-      
-      // Lese bestehende E-Mails
-      let emails: Array<{ email: string; timestamp: string }> = []
+    // E-Mail in JSON-Datei speichern für Statistiken (nur wenn E-Mail vorhanden)
+    if (customerEmail) {
       try {
-        const fileContent = await fs.readFile(filePath, 'utf-8')
-        emails = JSON.parse(fileContent)
-      } catch {
-        // Datei existiert noch nicht, starte mit leerem Array
+        const dataDir = path.join(process.cwd(), 'data')
+        const filePath = path.join(dataDir, 'waitlist.json')
+        
+        // Erstelle data-Ordner falls nicht vorhanden
+        await fs.mkdir(dataDir, { recursive: true })
+        
+        // Lese bestehende E-Mails
+        let emails: Array<{ email: string; timestamp: string }> = []
+        try {
+          const fileContent = await fs.readFile(filePath, 'utf-8')
+          emails = JSON.parse(fileContent)
+        } catch {
+          // Datei existiert noch nicht, starte mit leerem Array
+        }
+        
+        // Füge neue E-Mail hinzu
+        emails.push({
+          email: customerEmail,
+          timestamp: new Date().toISOString(),
+        })
+        
+        // Speichere zurück in Datei
+        await fs.writeFile(filePath, JSON.stringify(emails, null, 2), 'utf-8')
+        
+        console.log(`✅ E-Mail gespeichert. Gesamt: ${emails.length} E-Mails`)
+      } catch (fileError) {
+        console.error('⚠️ Fehler beim Speichern der E-Mail:', fileError)
+        // Weiter, auch wenn Speichern fehlschlägt
       }
-      
-      // Füge neue E-Mail hinzu
-      emails.push({
-        email,
-        timestamp: new Date().toISOString(),
-      })
-      
-      // Speichere zurück in Datei
-      await fs.writeFile(filePath, JSON.stringify(emails, null, 2), 'utf-8')
-      
-      console.log(`✅ E-Mail gespeichert. Gesamt: ${emails.length} E-Mails`)
-    } catch (fileError) {
-      console.error('⚠️ Fehler beim Speichern der E-Mail:', fileError)
-      // Weiter, auch wenn Speichern fehlschlägt
     }
 
     return NextResponse.json({ ok: true }, { status: 200 })
