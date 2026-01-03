@@ -44,56 +44,58 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <section className="hero-section">
-        {/* Top Bar */}
-        <div className="top-bar">
-          <div className="top-bar-content">
-            <div className="top-bar-logo">Luma</div>
-            <button
-              onClick={handleBuyClick}
-              className="top-bar-buy-button"
-              aria-label="Buy now for 29 euros"
-              disabled={isLoading}
-            >
-              {isLoading ? '...' : 'Buy — €29'}
-            </button>
-          </div>
-        </div>
-
-        {/* Background Image */}
+        {/* Background Images - Orientation-based switching */}
         <img
-          src="/ChatGPT Image 4. Jan. 2026, 00_01_38.png"
+          src="/Desktop.png"
           alt="Luma product"
-          className="hero-background-image"
+          className="hero-background-image hero-image-desktop"
+          loading="eager"
+          decoding="async"
+        />
+        <img
+          src="/Mobile.png"
+          alt="Luma product"
+          className="hero-background-image hero-image-mobile"
+          loading="eager"
+          decoding="async"
         />
 
         {/* Right-side Readability Overlay */}
         <div className="hero-readability-overlay" />
+        
+        {/* Top Gradient Overlay */}
+        <div className="hero-top-overlay" />
+
+        {/* Subtle Brand Badge */}
+        <div className="hero-brand-badge">Luma</div>
 
         {/* Hero Content - Right Side */}
         <div className="hero-content">
-          <h1 className="hero-title">Luma</h1>
-          <p className="hero-subtitle">A smart, emotional companion for kids.</p>
-          <div className="hero-price">
-            <span className="price-amount">€29</span>
-            <span className="price-separator"> • </span>
-            <span className="stock-info">Only 10 left in stock</span>
-          </div>
-          <div className="hero-cta-group">
-            <button
-              onClick={handleBuyClick}
-              className="cta-button primary"
-              aria-label="Buy now for 29 euros"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Loading...' : 'Buy now — €29'}
-            </button>
-            <button
-              onClick={scrollToFeatures}
-              className="cta-button secondary"
-              aria-label="Learn more about Luma"
-            >
-              Learn more
-            </button>
+          <div className="hero-glass-card">
+            <h1 className="hero-title">Luma</h1>
+            <p className="hero-subtitle">A smart, emotional companion for kids.</p>
+            <div className="hero-price-badge">
+              <span className="price-amount">€29</span>
+              <span className="price-separator"> • </span>
+              <span className="stock-info">Only 10 left in stock</span>
+            </div>
+            <div className="hero-cta-group">
+              <button
+                onClick={handleBuyClick}
+                className="cta-button primary"
+                aria-label="Buy now for 29 euros"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'Buy now — €29'}
+              </button>
+              <button
+                onClick={scrollToFeatures}
+                className="cta-button secondary"
+                aria-label="Learn more about Luma"
+              >
+                Learn more
+              </button>
+            </div>
           </div>
         </div>
       </section>
