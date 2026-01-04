@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { GoogleTagManager } from '@/lib/gtm'
+import { GoogleAnalytics4 } from '@/lib/ga4'
 
 export const metadata: Metadata = {
   title: 'Luma – your smart friend for the kids\' room',
@@ -13,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <GoogleTagManager />
+        <GoogleAnalytics4 />
+        {children}
+      </body>
     </html>
   )
 }

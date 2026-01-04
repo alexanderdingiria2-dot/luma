@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useEngagementTimers } from '@/hooks/useEngagementTimers'
+import { useScrollDepth } from '@/hooks/useScrollDepth'
+import { track } from '@/lib/analytics'
 
 type Step = 'initial' | 'success'
 
@@ -8,7 +11,14 @@ export default function Home() {
   const [step, setStep] = useState<Step>('initial')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleBuyClick = async () => {
+  // Analytics Hooks
+  useEngagementTimers()
+  useScrollDepth()
+
+  const handleBuyClick = async (location: 'hero' | 'offer' = 'hero') => {
+    // Track CTA click
+    track('cta_now_click', { location })
+
     setIsLoading(true)
 
     try {
@@ -47,6 +57,9 @@ export default function Home() {
   }
 
   const scrollToFeatures = () => {
+    // Track CTA click
+    track('cta_learn_more_click', { location: 'hero' })
+
     const featuresSection = document.getElementById('features')
     featuresSection?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -92,7 +105,7 @@ export default function Home() {
             </div>
             <div className="hero-cta-group">
               <button
-                onClick={handleBuyClick}
+                onClick={() => handleBuyClick('hero')}
                 className="cta-button primary"
                 aria-label="Buy now for 29 euros"
                 disabled={isLoading}
@@ -165,7 +178,7 @@ export default function Home() {
             <h2 className="offer-title">€29 — Limited first edition</h2>
             <p className="offer-stock">Only 10 left in stock</p>
             <button
-              onClick={handleBuyClick}
+              onClick={() => handleBuyClick('offer')}
               className="cta-button primary large"
               aria-label="Buy now for 29 euros"
               disabled={isLoading}
